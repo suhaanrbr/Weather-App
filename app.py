@@ -1,33 +1,23 @@
+from ui import show_title
+from utils import line
 from weather import get_weather
 
-print("=" * 40)
-print("🌦️ Weather Application")
-print("=" * 40)
+show_title()
 
 city = input("Enter your city: ")
 
-weather_data = get_weather(city)
+weather = get_weather(city)
 
-if weather_data["cod"] == 200:
+line()
 
-    city_name = weather_data["name"]
-    country = weather_data["sys"]["country"]
+if weather:
 
-    temperature = weather_data["main"]["temp"]
-    feels_like = weather_data["main"]["feels_like"]
-    humidity = weather_data["main"]["humidity"]
-
-    weather = weather_data["weather"][0]["description"]
-
-    wind_speed = weather_data["wind"]["speed"]
-
-    print()
-    print(f"📍 City: {city_name}, {country}")
-    print(f"🌡️ Temperature: {temperature}°C")
-    print(f"🤗 Feels Like: {feels_like}°C")
-    print(f"💧 Humidity: {humidity}%")
-    print(f"🌬️ Wind Speed: {wind_speed} m/s")
-    print(f"☁️ Weather: {weather.title()}")
+    print(f"📍 City        : {weather['city']}, {weather['country']}")
+    print(f"🌡 Temperature : {weather['temperature']} °C")
+    print(f"🥵 Feels Like : {weather['feels_like']} °C")
+    print(f"💧 Humidity    : {weather['humidity']}%")
+    print(f"☁ Condition   : {weather['condition'].title()}")
+    print(f"🌬 Wind Speed  : {weather['wind']} m/s")
 
 else:
     print("❌ City not found.")
