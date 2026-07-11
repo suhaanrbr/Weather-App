@@ -1,30 +1,95 @@
 import requests
-from colorama import Fore
-from config import API_KEY
+from config import API_KEY, BASE_URL
+from datetime import datetime
 
 
 def get_weather(city):
 
-    url = (
-        f"https://api.openweathermap.org/data/2.5/weather"
-        f"?q={city}&appid={API_KEY}&units=metric"
-    )
-
     try:
 
-        response = requests.get(url, timeout=10)
+        params = {
+            "q": city,
+            "appid": API_KEY,
+            "units": "metric"
+        }
 
-        if response.status_code == 200:
-            return response.json()
 
-        elif response.status_code == 404:
-            print(Fore.RED + "\n❌ City not found.")
-            return None
+        response = requests.get(
+            BASE_URL,
+            params=params,
+            timeout=10
+        )
 
-        else:
-            print(Fore.RED + f"\n❌ Error: {response.status_code}")
-            return None
 
-    except requests.exceptions.RequestException:
-        print(Fore.RED + "\n❌ No internet connection.")
-        return None
+        if response.status_code == 404:
+            return None, "City not found"
+
+
+        if response.status_code == 401:
+            return None, "Invalid API Key"
+
+
+        response.raise_for_status()
+
+
+        data = response.json()
+
+
+        weather = {
+
+            "city": data["name"],
+
+            "country": data["sys"]["country"],
+
+            "temperature": data["main"]["temp"],
+
+            "feels_like": data["main"]["feels_like"],
+
+            "min_temp": data["main"]["temp_min"],
+
+            "max_temp": data["main"]["temp_max"],
+
+            "humidity": data["main"]["humidity"],
+
+            "pressure": data["main"]["pressure"],
+
+            "wind": data["wind"]["speed"],
+
+            "visibility": data.get("visibility",0)/1000,
+
+            "description":
+            data["weather"][0]["description"],
+
+
+            "sunrise":
+            datetime.fromtimestamp(
+                data["sys"]["sunrise"]
+            ).strftime("%I:%M %p"),
+
+
+            "sunset":
+            datetime.fromtimestamp(
+                data["sys"]["sunset"]
+            ).strftime("%I:%M %p")
+
+        }
+
+
+        return weather, None
+
+
+
+    except requests.exceptions.Timeout:
+
+        return None,"Request timeout"
+
+
+    except requests.exceptions.ConnectionError:
+
+        return None,"No internet connection"
+
+
+
+    except Exception as e:
+
+        return None,str(e)

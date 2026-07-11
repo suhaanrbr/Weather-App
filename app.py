@@ -1,81 +1,216 @@
-from colorama import Fore, init
-
-from dashboard import show_dashboard
-from loading import loading
 from weather import get_weather
-from ui import display_weather
 
-from history import (
-    save_city,
+from utils import (
+    save_history,
     show_history,
-    clear_history,
+    save_favourite,
+    get_favourites,
+    remove_favourite
 )
 
-from favorites import (
-    add_favorite,
-    show_favorites,
-    remove_favorite,
-)
-
-init(autoreset=True)
 
 
-def main():
+def display_weather(weather):
+
+    print("\n==============================")
+
+    print(
+        f"Weather Report: "
+        f"{weather['city']}, {weather['country']}"
+    )
+
+
+    print("==============================")
+
+    print(
+        f"Condition : {weather['description']}"
+    )
+
+    print(
+        f"Temperature : {weather['temperature']} °C"
+    )
+
+
+    print(
+        f"Feels Like : {weather['feels_like']} °C"
+    )
+
+
+    print(
+        f"Minimum Temp : {weather['min_temp']} °C"
+    )
+
+
+    print(
+        f"Maximum Temp : {weather['max_temp']} °C"
+    )
+
+
+    print(
+        f"Humidity : {weather['humidity']} %"
+    )
+
+
+    print(
+        f"Pressure : {weather['pressure']} hPa"
+    )
+
+
+    print(
+        f"Wind Speed : {weather['wind']} m/s"
+    )
+
+
+    print(
+        f"Visibility : {weather['visibility']} km"
+    )
+
+
+    print(
+        f"Sunrise : {weather['sunrise']}"
+    )
+
+
+    print(
+        f"Sunset : {weather['sunset']}"
+    )
+
+
+    print("==============================\n")
+
+
+
+
+
+def menu():
 
     while True:
 
-        show_dashboard()
 
-        choice = input("\nSelect an option: ")
+        print("""
+========= WEATHER APP =========
 
-        if choice == "1":
+1. Search Weather
 
-            city = input("\nEnter city name: ").strip()
+2. View Search History
 
-            loading()
+3. View Favourite Cities
 
-            weather = get_weather(city)
+4. Remove Favourite
 
-            if weather:
+5. Exit
 
-                save_city(city)
+===============================
+""")
+
+
+        choice=input("Enter choice: ")
+
+
+
+        if choice=="1":
+
+
+            city=input(
+                "\nEnter city name: "
+            )
+
+
+            weather,error=get_weather(city)
+
+
+            if error:
+
+                print(
+                    "\nError:",
+                    error
+                )
+
+            else:
 
                 display_weather(weather)
 
-        elif choice == "2":
 
-            show_history()
+                save_history(city)
 
-        elif choice == "3":
 
-            clear_history()
+                fav=input(
+                    "Add to favourites? (y/n): "
+                )
 
-        elif choice == "4":
 
-            show_favorites()
+                if fav.lower()=="y":
 
-        elif choice == "5":
+                    save_favourite(city)
 
-            city = input("\nCity name: ")
 
-            add_favorite(city)
 
-        elif choice == "6":
+        elif choice=="2":
 
-            city = input("\nCity name: ")
 
-            remove_favorite(city)
+            print("\nSearch History:")
 
-        elif choice == "7":
+            for city in show_history():
 
-            print(Fore.GREEN + "\n👋 Thank you for using Weather Application!")
+                print(
+                    city.strip()
+                )
+
+
+
+        elif choice=="3":
+
+
+            print("\nFavourite Cities:")
+
+            for city in get_favourites():
+
+                print(city)
+
+
+
+
+        elif choice=="4":
+
+
+            city=input(
+                "Enter city to remove: "
+            )
+
+
+            if remove_favourite(city):
+
+                print(
+                    "Removed successfully"
+                )
+
+            else:
+
+                print(
+                    "City not found"
+                )
+
+
+
+        elif choice=="5":
+
+            print(
+                "Thank you for using Weather App"
+            )
 
             break
 
+
+
         else:
 
-            print(Fore.RED + "\nInvalid option.")
+            print(
+                "Invalid option"
+            )
 
 
-if __name__ == "__main__":
-    main()
+
+
+if __name__=="__main__":
+
+    menu()

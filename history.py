@@ -1,33 +1,18 @@
-HISTORY_FILE = "history.txt"
+from datetime import datetime
 
 
-def save_city(city):
-    with open(HISTORY_FILE, "a") as file:
-        file.write(city + "\n")
+def save_history(data):
 
+    with open("history.txt", "a", encoding="utf-8") as file:
 
-def show_history():
-    try:
-        with open(HISTORY_FILE, "r") as file:
-            cities = file.readlines()
+        file.write(
 
-            if not cities:
-                print("\nNo search history found.")
-                return
+            f"{datetime.now()} | "
 
-            print("\n========== Search History ==========")
+            f"{data['name']} | "
 
-            for index, city in enumerate(cities, start=1):
-                print(f"{index}. {city.strip()}")
+            f"{data['main']['temp']}°C | "
 
-            print("====================================")
+            f"{data['weather'][0]['description']}\n"
 
-    except FileNotFoundError:
-        print("\nNo search history found.")
-
-
-def clear_history():
-    with open(HISTORY_FILE, "w") as file:
-        pass
-
-    print("\nHistory cleared successfully.")
+        )
