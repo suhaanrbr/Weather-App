@@ -1,30 +1,35 @@
+from colorama import Fore, Style, init
 from weather import get_weather
 from ui import display_weather
 
+init(autoreset=True)
+
 
 def main():
-    print("=" * 45)
-    print("🌦️ WEATHER APPLICATION")
-    print("=" * 45)
+
+    print(Fore.CYAN + "=" * 55)
+    print(Fore.YELLOW + Style.BRIGHT + "🌦️ WEATHER APPLICATION")
+    print(Fore.CYAN + "=" * 55)
 
     while True:
-        city = input("\nEnter city name (or type 'exit'): ").strip()
+
+        city = input(Fore.GREEN + "\nEnter city name (or 'exit'): ")
 
         if city.lower() == "exit":
-            print("\n👋 Thank you for using Weather Application!")
+            print(Fore.MAGENTA + "\n👋 Thanks for using Weather App!")
             break
 
-        weather_data = get_weather(city)
+        weather = get_weather(city)
 
-        if weather_data:
-            display_weather(weather_data)
-        else:
-            print("❌ Unable to fetch weather.")
+        if weather:
+            display_weather(weather)
 
-        choice = input("\nSearch another city? (y/n): ").lower()
+        choice = input(
+            Fore.CYAN + "\nSearch another city? (y/n): "
+        ).lower()
 
         if choice != "y":
-            print("\n👋 Goodbye!")
+            print(Fore.MAGENTA + "\n👋 Goodbye!")
             break
 
 

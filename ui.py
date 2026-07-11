@@ -1,4 +1,7 @@
 from datetime import datetime
+from colorama import Fore, Style, init
+
+init(autoreset=True)
 
 
 def display_weather(data):
@@ -28,19 +31,19 @@ def display_weather(data):
         data["sys"]["sunset"]
     ).strftime("%I:%M %p")
 
-    print("-" * 50)
+    print(Fore.CYAN + "-" * 55)
 
-    print(f"📍 City         : {city}, {country}")
-    print(f"🌡 Temperature  : {temperature} °C")
-    print(f"🥵 Feels Like  : {feels_like} °C")
-    print(f"📉 Min Temp     : {temp_min} °C")
-    print(f"📈 Max Temp     : {temp_max} °C")
-    print(f"☁ Condition    : {description}")
-    print(f"💧 Humidity     : {humidity}%")
-    print(f"🌬 Wind Speed   : {wind_speed} m/s")
-    print(f"📊 Pressure     : {pressure} hPa")
-    print(f"👁 Visibility   : {visibility} km")
-    print(f"🌅 Sunrise      : {sunrise}")
-    print(f"🌇 Sunset       : {sunset}")
+    print(Fore.YELLOW + f"📍 City         : {city}, {country}")
+    print(Fore.RED + f"🌡 Temperature  : {temperature} °C")
+    print(Fore.RED + f"🥵 Feels Like   : {feels_like} °C")
+    print(Fore.BLUE + f"📉 Min Temp     : {temp_min} °C")
+    print(Fore.MAGENTA + f"📈 Max Temp     : {temp_max} °C")
+    print(Fore.WHITE + f"☁ Condition    : {description}")
+    print(Fore.CYAN + f"💧 Humidity     : {humidity}%")
+    print(Fore.GREEN + f"🌬 Wind Speed   : {wind_speed} m/s")
+    print(Fore.YELLOW + f"📊 Pressure     : {pressure} hPa")
+    print(Fore.BLUE + f"👁 Visibility   : {visibility} km")
+    print(Fore.LIGHTYELLOW_EX + f"🌅 Sunrise      : {sunrise}")
+    print(Fore.LIGHTRED_EX + f"🌇 Sunset       : {sunset}")
 
-    print("-" * 50)
+    print(Fore.CYAN + "-" * 55)
