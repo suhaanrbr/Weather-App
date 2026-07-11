@@ -1,6 +1,7 @@
 from ui import show_title
 from utils import line
 from weather import get_weather
+from history import save_history
 
 show_title()
 
@@ -17,6 +18,8 @@ while True:
     line()
 
     if weather:
+
+        save_history(city)
 
         print(f"📍 City        : {weather['city']}, {weather['country']}")
         print(f"🌡 Temperature : {weather['temperature']} °C")
