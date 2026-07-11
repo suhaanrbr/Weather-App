@@ -1,25 +1,33 @@
-def save_history(city):
+HISTORY_FILE = "history.txt"
 
-    with open("history.txt", "a") as file:
+
+def save_city(city):
+    with open(HISTORY_FILE, "a") as file:
         file.write(city + "\n")
 
 
 def show_history():
-
     try:
+        with open(HISTORY_FILE, "r") as file:
+            cities = file.readlines()
 
-        with open("history.txt", "r") as file:
-
-            history = file.readlines()
-
-            if len(history) == 0:
-                print("\nNo searches found.")
+            if not cities:
+                print("\nNo search history found.")
                 return
 
-            print("\n========== SEARCH HISTORY ==========\n")
+            print("\n========== Search History ==========")
 
-            for number, city in enumerate(history, start=1):
-                print(f"{number}. {city.strip()}")
+            for index, city in enumerate(cities, start=1):
+                print(f"{index}. {city.strip()}")
+
+            print("====================================")
 
     except FileNotFoundError:
-        print("\nNo history found.")
+        print("\nNo search history found.")
+
+
+def clear_history():
+    with open(HISTORY_FILE, "w") as file:
+        pass
+
+    print("\nHistory cleared successfully.")
