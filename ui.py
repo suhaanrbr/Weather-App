@@ -1,7 +1,30 @@
 from datetime import datetime
-from colorama import Fore, Style, init
+from colorama import Fore, init
 
 init(autoreset=True)
+
+
+def get_weather_icon(condition):
+
+    icons = {
+        "Clear": "☀️",
+        "Clouds": "☁️",
+        "Rain": "🌧️",
+        "Drizzle": "🌦️",
+        "Thunderstorm": "⛈️",
+        "Snow": "❄️",
+        "Mist": "🌫️",
+        "Smoke": "🌫️",
+        "Haze": "🌫️",
+        "Dust": "🌪️",
+        "Fog": "🌫️",
+        "Sand": "🏜️",
+        "Ash": "🌋",
+        "Squall": "💨",
+        "Tornado": "🌪️"
+    }
+
+    return icons.get(condition, "🌍")
 
 
 def display_weather(data):
@@ -17,6 +40,7 @@ def display_weather(data):
     humidity = data["main"]["humidity"]
     pressure = data["main"]["pressure"]
 
+    main_condition = data["weather"][0]["main"]
     description = data["weather"][0]["description"].title()
 
     wind_speed = data["wind"]["speed"]
@@ -31,19 +55,23 @@ def display_weather(data):
         data["sys"]["sunset"]
     ).strftime("%I:%M %p")
 
-    print(Fore.CYAN + "-" * 55)
+    icon = get_weather_icon(main_condition)
+
+    print(Fore.CYAN + "-" * 60)
 
     print(Fore.YELLOW + f"📍 City         : {city}, {country}")
-    print(Fore.RED + f"🌡 Temperature  : {temperature} °C")
-    print(Fore.RED + f"🥵 Feels Like   : {feels_like} °C")
-    print(Fore.BLUE + f"📉 Min Temp     : {temp_min} °C")
-    print(Fore.MAGENTA + f"📈 Max Temp     : {temp_max} °C")
-    print(Fore.WHITE + f"☁ Condition    : {description}")
+    print(Fore.RED + f"🌡 Temperature  : {temperature:.1f} °C")
+    print(Fore.RED + f"🥵 Feels Like   : {feels_like:.1f} °C")
+    print(Fore.BLUE + f"📉 Min Temp     : {temp_min:.1f} °C")
+    print(Fore.MAGENTA + f"📈 Max Temp     : {temp_max:.1f} °C")
+
+    print(Fore.WHITE + f"{icon} Weather      : {description}")
+
     print(Fore.CYAN + f"💧 Humidity     : {humidity}%")
     print(Fore.GREEN + f"🌬 Wind Speed   : {wind_speed} m/s")
     print(Fore.YELLOW + f"📊 Pressure     : {pressure} hPa")
-    print(Fore.BLUE + f"👁 Visibility   : {visibility} km")
+    print(Fore.BLUE + f"👁 Visibility   : {visibility:.1f} km")
     print(Fore.LIGHTYELLOW_EX + f"🌅 Sunrise      : {sunrise}")
     print(Fore.LIGHTRED_EX + f"🌇 Sunset       : {sunset}")
 
-    print(Fore.CYAN + "-" * 55)
+    print(Fore.CYAN + "-" * 60)
