@@ -1,61 +1,32 @@
-from ui import show_title
-from utils import line
 from weather import get_weather
-from history import save_history, show_history
+from ui import display_weather
 
-while True:
 
-    show_title()
+def main():
+    print("=" * 45)
+    print("🌦️ WEATHER APPLICATION")
+    print("=" * 45)
 
-    print("1. Search Weather")
-    print("2. View Search History")
-    print("3. Exit")
+    while True:
+        city = input("\nEnter city name (or type 'exit'): ").strip()
 
-    choice = input("\nChoose an option: ")
+        if city.lower() == "exit":
+            print("\n👋 Thank you for using Weather Application!")
+            break
 
-    if choice == "1":
+        weather_data = get_weather(city)
 
-        city = input("\nEnter your city: ")
-
-        weather = get_weather(city)
-
-        line()
-
-        if weather:
-
-            save_history(city)
-
-            print("\n========== WEATHER REPORT ==========\n")
-
-            print(f"{weather['icon']} Weather      : {weather['condition'].title()}")
-            print(f"📍 City         : {weather['city']}, {weather['country']}")
-            print(f"🌡 Temperature  : {weather['temperature']} °C")
-            print(f"🥵 Feels Like   : {weather['feels_like']} °C")
-            print(f"💧 Humidity     : {weather['humidity']}%")
-            print(f"🌬 Wind Speed   : {weather['wind']} m/s")
-
-            print("\n===================================")
-
+        if weather_data:
+            display_weather(weather_data)
         else:
-            print("❌ City not found.")
+            print("❌ Unable to fetch weather.")
 
-        line()
+        choice = input("\nSearch another city? (y/n): ").lower()
 
-        input("\nPress Enter to continue...")
+        if choice != "y":
+            print("\n👋 Goodbye!")
+            break
 
-    elif choice == "2":
 
-        show_history()
-
-        input("\nPress Enter to continue...")
-
-    elif choice == "3":
-
-        print("\n👋 Goodbye!")
-        break
-
-    else:
-
-        print("\nInvalid option.")
-
-        input("\nPress Enter to continue...")
+if __name__ == "__main__":
+    main()

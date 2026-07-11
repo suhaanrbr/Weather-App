@@ -3,29 +3,26 @@ from config import API_KEY
 
 
 def get_weather(city):
-    url = "https://api.openweathermap.org/data/2.5/weather"
 
-    parameters = {
-        "q": city,
-        "appid": API_KEY,
-        "units": "metric"
-    }
+    url = (
+        f"https://api.openweathermap.org/data/2.5/weather"
+        f"?q={city}&appid={API_KEY}&units=metric"
+    )
 
-    response = requests.get(url, params=parameters)
+    try:
+        response = requests.get(url)
 
-    if response.status_code == 200:
+        if response.status_code == 200:
+            return response.json()
 
-        data = response.json()
+        elif response.status_code == 404:
+            print("\n❌ City not found.")
+            return None
 
-        return {
-            "city": data["name"],
-            "country": data["sys"]["country"],
-            "temperature": data["main"]["temp"],
-            "feels_like": data["main"]["feels_like"],
-            "humidity": data["main"]["humidity"],
-            "condition": data["weather"][0]["description"],
-            "wind": data["wind"]["speed"]
-        }
+        else:
+            print(f"\n❌ Error: {response.status_code}")
+            return None
 
-    else:
+    except requests.exceptions.RequestException:
+        print("\n❌ Internet connection problem.")
         return None
