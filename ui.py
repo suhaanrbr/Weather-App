@@ -1,77 +1,386 @@
-from datetime import datetime
-from colorama import Fore, init
-
-init(autoreset=True)
-
-
-def get_weather_icon(condition):
-
-    icons = {
-        "Clear": "☀️",
-        "Clouds": "☁️",
-        "Rain": "🌧️",
-        "Drizzle": "🌦️",
-        "Thunderstorm": "⛈️",
-        "Snow": "❄️",
-        "Mist": "🌫️",
-        "Smoke": "🌫️",
-        "Haze": "🌫️",
-        "Dust": "🌪️",
-        "Fog": "🌫️",
-        "Sand": "🏜️",
-        "Ash": "🌋",
-        "Squall": "💨",
-        "Tornado": "🌪️"
-    }
-
-    return icons.get(condition, "🌍")
+# ==========================================
+# Weather App User Interface
+# ==========================================
 
 
-def display_weather(data):
+from weather import get_weather
 
-    city = data["name"]
-    country = data["sys"]["country"]
+from dashboard import display_dashboard
 
-    temperature = data["main"]["temp"]
-    feels_like = data["main"]["feels_like"]
-    temp_min = data["main"]["temp_min"]
-    temp_max = data["main"]["temp_max"]
+from favorites import (
+    add_favorite,
+    get_favorites,
+    remove_favorite
+)
 
-    humidity = data["main"]["humidity"]
-    pressure = data["main"]["pressure"]
+from history import (
+    save_history,
+    get_history,
+    clear_history
+)
 
-    main_condition = data["weather"][0]["main"]
-    description = data["weather"][0]["description"].title()
+from loading import show_loading
 
-    wind_speed = data["wind"]["speed"]
+from utils import welcome_message
 
-    visibility = data["visibility"] / 1000
 
-    sunrise = datetime.fromtimestamp(
-        data["sys"]["sunrise"]
-    ).strftime("%I:%M %p")
 
-    sunset = datetime.fromtimestamp(
-        data["sys"]["sunset"]
-    ).strftime("%I:%M %p")
 
-    icon = get_weather_icon(main_condition)
 
-    print(Fore.CYAN + "-" * 60)
+# ------------------------------------------
+# Search Weather Function
+# ------------------------------------------
 
-    print(Fore.YELLOW + f"📍 City         : {city}, {country}")
-    print(Fore.RED + f"🌡 Temperature  : {temperature:.1f} °C")
-    print(Fore.RED + f"🥵 Feels Like   : {feels_like:.1f} °C")
-    print(Fore.BLUE + f"📉 Min Temp     : {temp_min:.1f} °C")
-    print(Fore.MAGENTA + f"📈 Max Temp     : {temp_max:.1f} °C")
 
-    print(Fore.WHITE + f"{icon} Weather      : {description}")
+def search_weather():
 
-    print(Fore.CYAN + f"💧 Humidity     : {humidity}%")
-    print(Fore.GREEN + f"🌬 Wind Speed   : {wind_speed} m/s")
-    print(Fore.YELLOW + f"📊 Pressure     : {pressure} hPa")
-    print(Fore.BLUE + f"👁 Visibility   : {visibility:.1f} km")
-    print(Fore.LIGHTYELLOW_EX + f"🌅 Sunrise      : {sunrise}")
-    print(Fore.LIGHTRED_EX + f"🌇 Sunset       : {sunset}")
 
-    print(Fore.CYAN + "-" * 60)
+    city = input(
+        "\nEnter city name: "
+    )
+
+
+    if not city:
+
+
+        print(
+            "City name cannot be empty"
+        )
+
+        return
+
+
+
+
+    show_loading()
+
+
+
+    weather, error = get_weather(city)
+
+
+
+    if error:
+
+
+        print(
+            "\n⚠ Error:",
+            error
+        )
+
+
+        return
+
+
+
+
+
+    # Save search history
+
+    save_history(city)
+
+
+
+
+    # Display dashboard
+
+    display_dashboard(weather)
+
+
+
+
+
+    choice = input(
+
+        "\nAdd this city to favourites? (y/n): "
+
+    )
+
+
+
+    if choice.lower() == "y":
+
+
+        if add_favorite(city):
+
+
+            print(
+                "⭐ Added to favourites"
+            )
+
+
+        else:
+
+
+            print(
+                "Already in favourites"
+            )
+
+
+
+
+
+
+
+# ------------------------------------------
+# Show Search History
+# ------------------------------------------
+
+
+def show_history_menu():
+
+
+    history = get_history()
+
+
+
+    print("\n===== SEARCH HISTORY =====")
+
+
+
+    if not history:
+
+
+        print(
+            "No search history found"
+        )
+
+
+        return
+
+
+
+
+    for index, city in enumerate(history,1):
+
+
+        print(
+
+            f"{index}. {city}"
+
+        )
+
+
+
+
+
+
+
+# ------------------------------------------
+# Show Favourite Cities
+# ------------------------------------------
+
+
+def show_favorites_menu():
+
+
+    favorites = get_favorites()
+
+
+
+    print("\n===== FAVOURITE CITIES =====")
+
+
+
+    if not favorites:
+
+
+        print(
+            "No favourites added"
+        )
+
+
+        return
+
+
+
+
+
+    for index, city in enumerate(favorites,1):
+
+
+        print(
+
+            f"{index}. ⭐ {city}"
+
+        )
+
+
+
+
+
+
+
+
+# ------------------------------------------
+# Remove Favourite
+# ------------------------------------------
+
+
+def remove_favorite_menu():
+
+
+    city = input(
+
+        "\nEnter city to remove: "
+
+    )
+
+
+
+    if remove_favorite(city):
+
+
+        print(
+            "Removed successfully"
+        )
+
+
+    else:
+
+
+        print(
+            "City not found"
+        )
+
+
+
+
+
+
+
+
+# ------------------------------------------
+# Main Application Menu
+# ------------------------------------------
+
+
+def start_ui():
+
+
+    print(
+
+        welcome_message()
+
+    )
+
+
+
+    while True:
+
+
+
+        print("""
+
+=====================================
+            WEATHER APP PRO
+=====================================
+
+1. Search Weather
+
+2. Search History
+
+3. Favourite Cities
+
+4. Remove Favourite
+
+5. Clear History
+
+6. Exit
+
+=====================================
+
+""")
+
+
+
+        choice = input(
+
+            "Enter your choice: "
+
+        )
+
+
+
+
+
+
+        if choice == "1":
+
+
+            search_weather()
+
+
+
+
+
+
+        elif choice == "2":
+
+
+            show_history_menu()
+
+
+
+
+
+
+        elif choice == "3":
+
+
+            show_favorites_menu()
+
+
+
+
+
+
+        elif choice == "4":
+
+
+            remove_favorite_menu()
+
+
+
+
+
+
+        elif choice == "5":
+
+
+            clear_history()
+
+
+            print(
+                "History cleared"
+            )
+
+
+
+
+
+
+        elif choice == "6":
+
+
+            print(
+
+                "Thank you for using Weather App Pro"
+
+            )
+
+
+            break
+
+
+
+
+
+        else:
+
+
+            print(
+
+                "Invalid option"
+
+            )

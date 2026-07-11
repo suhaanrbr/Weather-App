@@ -1,67 +1,122 @@
-FAVORITES_FILE = "favorites.txt"
+"""
+favorites.py
+Manage favourite cities.
+"""
 
+import os
+from config import FAVORITES_FILE
+
+
+# ==========================================================
+# CREATE FILE
+# ==========================================================
+
+def initialize_favorites():
+
+    if not os.path.exists(FAVORITES_FILE):
+
+        with open(FAVORITES_FILE, "w", encoding="utf-8"):
+            pass
+
+
+initialize_favorites()
+
+
+# ==========================================================
+# GET FAVORITES
+# ==========================================================
+
+def get_favorites():
+
+    with open(FAVORITES_FILE, "r", encoding="utf-8") as file:
+
+        favorites = [
+            city.strip()
+            for city in file.readlines()
+            if city.strip()
+        ]
+
+    return favorites
+
+
+# ==========================================================
+# ADD FAVORITE
+# ==========================================================
 
 def add_favorite(city):
 
     city = city.title()
 
-    try:
-        with open(FAVORITES_FILE, "r") as file:
-            favorites = [line.strip() for line in file]
+    favorites = get_favorites()
 
-        if city in favorites:
-            print("\n⭐ City already exists in favorites.")
-            return
+    if city in favorites:
+        return False
 
-    except FileNotFoundError:
-        pass
+    with open(FAVORITES_FILE, "a", encoding="utf-8") as file:
 
-    with open(FAVORITES_FILE, "a") as file:
         file.write(city + "\n")
 
-    print(f"\n✅ {city} added to favorites.")
+    return True
 
 
-def show_favorites():
-
-    try:
-        with open(FAVORITES_FILE, "r") as file:
-            favorites = file.readlines()
-
-        if not favorites:
-            print("\nNo favorite cities.")
-            return
-
-        print("\n========== Favorite Cities ==========")
-
-        for index, city in enumerate(favorites, start=1):
-            print(f"{index}. {city.strip()}")
-
-        print("=====================================")
-
-    except FileNotFoundError:
-        print("\nNo favorite cities.")
-
+# ==========================================================
+# REMOVE FAVORITE
+# ==========================================================
 
 def remove_favorite(city):
 
     city = city.title()
 
-    try:
-        with open(FAVORITES_FILE, "r") as file:
-            favorites = [line.strip() for line in file]
+    favorites = get_favorites()
 
-        if city not in favorites:
-            print("\nCity not found.")
-            return
+    if city not in favorites:
+        return False
 
-        favorites.remove(city)
+    favorites.remove(city)
 
-        with open(FAVORITES_FILE, "w") as file:
-            for item in favorites:
-                file.write(item + "\n")
+    with open(FAVORITES_FILE, "w", encoding="utf-8") as file:
 
-        print(f"\n🗑 {city} removed from favorites.")
+        for favorite in favorites:
 
-    except FileNotFoundError:
-        print("\nNo favorite cities.")
+            file.write(favorite + "\n")
+
+    return True
+
+
+# ==========================================================
+# CLEAR FAVORITES
+# ==========================================================
+
+def clear_favorites():
+
+    with open(FAVORITES_FILE, "w", encoding="utf-8"):
+        pass
+
+
+# ==========================================================
+# CHECK FAVORITE
+# ==========================================================
+
+def is_favorite(city):
+
+    city = city.title()
+
+    return city in get_favorites()
+
+
+# ==========================================================
+# COUNT
+# ==========================================================
+
+def total_favorites():
+
+    return len(get_favorites())
+
+
+# ==========================================================
+# TEST
+# ==========================================================
+
+if __name__ == "__main__":
+
+    print(get_favorites())

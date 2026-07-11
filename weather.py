@@ -1,39 +1,67 @@
+"""
+weather.py
+Handles current weather and 5-day forecast using OpenWeather API.
+"""
+
 import requests
-from config import API_KEY, BASE_URL
 from datetime import datetime
 
+from config import (
+    API_KEY,
+    CURRENT_WEATHER_URL,
+    FORECAST_URL,
+    UNITS,
+    LANGUAGE,
+    REQUEST_TIMEOUT,
+)
+
+
+# ==========================================================
+# TIME FORMAT
+# ==========================================================
+
+def unix_to_time(timestamp):
+    return datetime.fromtimestamp(timestamp).strftime("%I:%M %p")
+
+
+# ==========================================================
+# DATE FORMAT
+# ==========================================================
+
+def format_date(date_string):
+    date = datetime.strptime(date_string, "%Y-%m-%d %H:%M:%S")
+    return date.strftime("%a")
+
+
+# ==========================================================
+# CURRENT WEATHER
+# ==========================================================
 
 def get_weather(city):
+    """
+    Returns:
+        weather_data, None
+        None, error_message
+    """
+
+    parameters = {
+        "q": city,
+        "appid": API_KEY,
+        "units": UNITS,
+        "lang": LANGUAGE,
+    }
 
     try:
 
-        params = {
-            "q": city,
-            "appid": API_KEY,
-            "units": "metric"
-        }
-
-
         response = requests.get(
-            BASE_URL,
-            params=params,
-            timeout=10
+            CURRENT_WEATHER_URL,
+            params=parameters,
+            timeout=REQUEST_TIMEOUT,
         )
-
-
-        if response.status_code == 404:
-            return None, "City not found"
-
-
-        if response.status_code == 401:
-            return None, "Invalid API Key"
-
 
         response.raise_for_status()
 
-
         data = response.json()
-
 
         weather = {
 
@@ -41,55 +69,160 @@ def get_weather(city):
 
             "country": data["sys"]["country"],
 
-            "temperature": data["main"]["temp"],
+            "temperature": round(data["main"]["temp"]),
 
-            "feels_like": data["main"]["feels_like"],
+            "feels_like": round(data["main"]["feels_like"]),
 
-            "min_temp": data["main"]["temp_min"],
+            "temp_min": round(data["main"]["temp_min"]),
 
-            "max_temp": data["main"]["temp_max"],
+            "temp_max": round(data["main"]["temp_max"]),
 
             "humidity": data["main"]["humidity"],
 
             "pressure": data["main"]["pressure"],
 
-            "wind": data["wind"]["speed"],
+            "visibility": round(data.get("visibility", 0) / 1000, 1),
 
-            "visibility": data.get("visibility",0)/1000,
+            "wind_speed": data["wind"]["speed"],
 
-            "description":
-            data["weather"][0]["description"],
+            "wind_degree": data["wind"].get("deg", 0),
 
+            "description": data["weather"][0]["description"].title(),
 
-            "sunrise":
-            datetime.fromtimestamp(
-                data["sys"]["sunrise"]
-            ).strftime("%I:%M %p"),
+            "main": data["weather"][0]["main"],
 
+            "icon": data["weather"][0]["icon"],
 
-            "sunset":
-            datetime.fromtimestamp(
-                data["sys"]["sunset"]
-            ).strftime("%I:%M %p")
+            "sunrise": unix_to_time(data["sys"]["sunrise"]),
+
+            "sunset": unix_to_time(data["sys"]["sunset"]),
+
+            "latitude": data["coord"]["lat"],
+
+            "longitude": data["coord"]["lon"],
 
         }
 
-
         return weather, None
 
+    except requests.exceptions.HTTPError:
 
-
-    except requests.exceptions.Timeout:
-
-        return None,"Request timeout"
-
+        return None, "City not found."
 
     except requests.exceptions.ConnectionError:
 
-        return None,"No internet connection"
+        return None, "No internet connection."
+
+    except requests.exceptions.Timeout:
+
+        return None, "Server timeout."
+
+    except Exception as error:
+
+        return None, str(error)
 
 
+# ==========================================================
+# 5-DAY FORECAST
+# ==========================================================
 
-    except Exception as e:
+def get_forecast(city):
+    """
+    Returns:
+        forecast_list, None
+        None, error
+    """
 
-        return None,str(e)
+    parameters = {
+        "q": city,
+        "appid": API_KEY,
+        "units": UNITS,
+        "lang": LANGUAGE,
+    }
+
+    try:
+
+        response = requests.get(
+            FORECAST_URL,
+            params=parameters,
+            timeout=REQUEST_TIMEOUT,
+        )
+
+        response.raise_for_status()
+
+        data = response.json()
+
+        forecast = []
+
+        # Every 8th record ≈ 24 hours
+        for item in data["list"][::8]:
+
+            forecast.append({
+
+                "day": format_date(item["dt_txt"]),
+
+                "temperature": round(item["main"]["temp"]),
+
+                "temp_min": round(item["main"]["temp_min"]),
+
+                "temp_max": round(item["main"]["temp_max"]),
+
+                "description": item["weather"][0]["description"].title(),
+
+                "main": item["weather"][0]["main"],
+
+                "icon": item["weather"][0]["icon"]
+
+            })
+
+        return forecast[:5], None
+
+    except Exception as error:
+
+        return None, str(error)
+
+
+# ==========================================================
+# INTERNET CHECK
+# ==========================================================
+
+def internet_available():
+
+    try:
+
+        requests.get(
+            "https://www.google.com",
+            timeout=5
+        )
+
+        return True
+
+    except:
+
+        return False
+
+
+# ==========================================================
+# TEST
+# ==========================================================
+
+if __name__ == "__main__":
+
+    city = input("Enter City: ")
+
+    weather, error = get_weather(city)
+
+    if error:
+        print(error)
+
+    else:
+
+        print(weather)
+
+        forecast, _ = get_forecast(city)
+
+        print("\nForecast\n")
+
+        for day in forecast:
+
+            print(day)

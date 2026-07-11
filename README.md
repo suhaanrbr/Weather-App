@@ -1,32 +1,29 @@
-# 🌦 Weather Application
+# 🌤 Weather App Pro
 
-A command-line Weather Application built using Python and the OpenWeather API.
-
----
+A modern desktop weather application built using Python and CustomTkinter.
 
 ## Features
 
 - Search weather by city
-- Real-time weather information
+- Real-time OpenWeather API
 - Temperature
 - Feels Like
+- Minimum Temperature
+- Maximum Temperature
 - Humidity
+- Pressure
 - Wind Speed
 - Visibility
-- Pressure
-- Min / Max Temperature
-- Weather History
-- Favourite Cities
-- Loading Animation
-- Error Handling
-
----
-
-## Technologies
-
-- Python
-- Requests
-- OpenWeather API
+- Sunrise & Sunset
+- Weather Description
+- Dynamic Weather Icons
+- 5-Day Forecast
+- Search History
+- Favorite Cities
+- Dark / Light Mode
+- Refresh Weather
+- Professional Dashboard
+- GitHub Ready
 
 ---
 
@@ -35,7 +32,7 @@ A command-line Weather Application built using Python and the OpenWeather API.
 Clone repository
 
 ```bash
-git clone https://github.com/yourusername/Weather-App.git
+git clone https://github.com/yourusername/weather-app-pro.git
 ```
 
 Install dependencies
@@ -44,7 +41,19 @@ Install dependencies
 pip install -r requirements.txt
 ```
 
-Run application
+Open
+
+```python
+config.py
+```
+
+Replace
+
+```python
+API_KEY="YOUR_OPENWEATHER_API_KEY"
+```
+
+Run
 
 ```bash
 python app.py
@@ -55,15 +64,28 @@ python app.py
 ## Project Structure
 
 ```
-Weather-App
+Weather-App-Pro/
+
 │
 ├── app.py
+├── gui.py
+├── dashboard.py
 ├── weather.py
 ├── config.py
-├── dashboard.py
+├── favorites.py
 ├── history.py
-├── favourites.py
+├── utils.py
 ├── loading.py
+│
+├── assets/
+│   ├── clear.png
+│   ├── clouds.png
+│   ├── rain.png
+│   ├── snow.png
+│   ├── thunder.png
+│   └── mist.png
+│
+├── favorites.txt
 ├── history.txt
 ├── requirements.txt
 └── README.md
@@ -71,31 +93,16 @@ Weather-App
 
 ---
 
-## Example Output
+## Technologies
 
-```
-==================================================
-🌦 WEATHER APPLICATION
-==================================================
-
-Enter city name: London
-
-Searching weather...
-
-==================================================
-📍 CITY : London, GB
-🌡 Temperature : 24°C
-🥵 Feels Like : 25°C
-☁ Weather : Clear Sky
-💧 Humidity : 68%
-🌬 Wind Speed : 3.4 m/s
-📈 Pressure : 1022 hPa
-👀 Visibility : 10 km
-⬆ Max Temp : 25°C
-⬇ Min Temp : 22°C
-==================================================
-```
+- Python
+- CustomTkinter
+- Requests
+- Pillow
+- OpenWeather API
 
 ---
 
-Created with ❤️ using Python.
+## Author
+
+Waqar Younis
